@@ -24,7 +24,11 @@ jobs:
       - name: Prepare web files
         run: |
           mkdir www
-          cp index.html offline.html manifest.json icon-192.png icon-512.png apple-touch-icon.png www/
+          echo "Files in repo root:"; ls -la
+          for f in index.html offline.html manifest.json icon-192.png icon-512.png apple-touch-icon.png; do
+            if [ -f "$f" ]; then cp "$f" www/; else echo "MISSING FILE: $f"; fi
+          done
+          test -f www/index.html
 
       - name: Create Android project
         run: |
@@ -35,6 +39,7 @@ jobs:
           npx cap sync android
 
       - name: Use our icon
+        if: hashFiles('icon-512.png') != ''
         run: |
           for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
             for n in ic_launcher ic_launcher_round ic_launcher_foreground; do
