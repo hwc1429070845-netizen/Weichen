@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -29,6 +30,7 @@ main{min-width:0}
 .sentence{display:flex;align-items:flex-start;gap:12px;margin-top:12px}
 .polish{font-size:clamp(27px,4vw,42px);line-height:1.3;letter-spacing:-.7px;margin:0;flex:1;overflow-wrap:anywhere}
 .play{border:0;background:var(--blue);color:white;border-radius:15px;width:49px;height:49px;font-size:22px;flex-shrink:0}
+.play:disabled{opacity:.6;cursor:wait}
 .translation{font-size:19px;color:#69768a;margin:22px 0}
 .tip{border-top:1px solid var(--border);padding-top:18px;font-size:13px;color:var(--muted)}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:35px}
@@ -46,7 +48,7 @@ h2{font-size:25px;margin:12px 0}
 .item-cn{font-size:13px;color:var(--muted);margin:0}
 .item button{border:1px solid var(--border);background:white;border-radius:9px;padding:8px}
 .empty{padding:35px;text-align:center;color:var(--muted)}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#182033;color:white;border-radius:12px;padding:12px 17px;display:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#182033;color:white;border-radius:12px;padding:12px 17px;display:none;z-index:999}
 @media(max-width:700px){
 .app{padding:13px}.layout{grid-template-columns:1fr;gap:12px}
 aside{padding:8px;overflow-x:auto}nav{display:flex;gap:5px}
@@ -54,6 +56,7 @@ nav button{width:auto;white-space:nowrap;margin:0;padding:10px}
 .panel{padding:20px;min-height:500px}.kicker{margin-top:34px}
 .polish{font-size:29px}.translation{font-size:17px}
 .actions .btn{flex:1;padding:11px 7px;font-size:13px}
+.item{gap:7px;padding:10px}.item button{padding:8px 9px}
 }
 </style>
 </head>
@@ -61,8 +64,12 @@ nav button{width:auto;white-space:nowrap;margin:0;padding:10px}
 <div class="app">
 <header>
 <div class="logo">PL</div>
-<div><h1>Polski Daily</h1><p>为中国人设计的波兰语生活句学习系统</p></div>
+<div>
+<h1>Polski Daily</h1>
+<p>为中国人设计的波兰语生活句学习系统</p>
+</div>
 </header>
+
 <div class="layout">
 <aside>
 <nav>
@@ -74,123 +81,628 @@ nav button{width:auto;white-space:nowrap;margin:0;padding:10px}
 </aside>
 <main id="main" class="panel"></main>
 </div>
-<div class="bottom">学习建议：每天掌握10–20句，听完发音后大声跟读。学习记录已开启自动本地记忆，下次打开会自动恢复。</div>
+
+<div class="bottom">
+学习建议：每天掌握10–20句，听完发音后大声跟读。学习记录自动保存在当前浏览器中，下次打开会自动恢复。
 </div>
-<div id="toast"></div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
 <script>
-const groups={
+const groups = {
 "基础交流":[
-["Dzień dobry.","您好。"],["Cześć!","你好！"],["Dobry wieczór.","晚上好。"],["Do widzenia.","再见。"],["Do zobaczenia.","回头见。"],["Dziękuję.","谢谢。"],["Dziękuję bardzo.","非常感谢。"],["Proszę.","请；不客气。"],["Przepraszam.","不好意思；对不起。"],["Nie ma za co.","不客气。"],["Nic nie szkodzi.","没关系。"],["Rozumiem.","我明白。"],["Nie rozumiem.","我不明白。"],["Nie wiem.","我不知道。"],["Jasne.","当然；明白。"],["W porządku.","好的；没问题。"],["Nie ma problemu.","没问题。"],["Jak się masz?","你怎么样？"],["Co słychać?","最近怎么样？"],["Wszystko dobrze.","一切都好。"],["Miłego dnia!","祝你今天愉快！"],["Powodzenia!","祝你好运！"],["Jestem z Chin.","我来自中国。"],["Uczę się polskiego.","我正在学习波兰语。"],["Mówię trochę po polsku.","我会说一点波兰语。"],["Nie mówię dobrze po polsku.","我波兰语说得不好。"],["Proszę mówić wolniej.","请说慢一点。"],["Proszę powtórzyć.","请重复一遍。"],["Co to znaczy?","这是什么意思？"],["Jak to się mówi po polsku?","这个用波兰语怎么说？"],["Jak to się pisze?","这个怎么拼写？"],["Proszę mi pomóc.","请帮帮我。"],["Chwileczkę, proszę.","请稍等一下。"],["Już rozumiem.","我现在明白了。"],["Zaraz wracam.","我马上回来。"],["Miło mi cię poznać.","很高兴认识你。"]
+["Dzień dobry.","您好。"],
+["Cześć!","你好！"],
+["Dobry wieczór.","晚上好。"],
+["Do widzenia.","再见。"],
+["Do zobaczenia.","回头见。"],
+["Dziękuję.","谢谢。"],
+["Dziękuję bardzo.","非常感谢。"],
+["Proszę.","请；不客气。"],
+["Przepraszam.","不好意思；对不起。"],
+["Nie ma za co.","不客气。"],
+["Nic nie szkodzi.","没关系。"],
+["Rozumiem.","我明白。"],
+["Nie rozumiem.","我不明白。"],
+["Nie wiem.","我不知道。"],
+["Jasne.","当然；明白。"],
+["W porządku.","好的；没问题。"],
+["Nie ma problemu.","没问题。"],
+["Jak się masz?","你怎么样？"],
+["Co słychać?","最近怎么样？"],
+["Wszystko dobrze.","一切都好。"],
+["Miłego dnia!","祝你今天愉快！"],
+["Powodzenia!","祝你好运！"],
+["Jestem z Chin.","我来自中国。"],
+["Uczę się polskiego.","我正在学习波兰语。"],
+["Mówię trochę po polsku.","我会说一点波兰语。"],
+["Nie mówię dobrze po polsku.","我波兰语说得不好。"],
+["Proszę mówić wolniej.","请说慢一点。"],
+["Proszę powtórzyć.","请重复一遍。"],
+["Co to znaczy?","这是什么意思？"],
+["Jak to się mówi po polsku?","这个用波兰语怎么说？"],
+["Jak to się pisze?","这个怎么拼写？"],
+["Proszę mi pomóc.","请帮帮我。"],
+["Chwileczkę, proszę.","请稍等一下。"],
+["Już rozumiem.","我现在明白了。"],
+["Zaraz wracam.","我马上回来。"],
+["Miło mi cię poznać.","很高兴认识你。"]
 ],
 "超市购物":[
-["Ile to kosztuje?","这个多少钱？"],["Poproszę to.","我要这个。"],["Wezmę to.","我买这个。"],["To za drogie.","这个太贵了。"],["Czy jest coś tańszego?","有便宜一点的吗？"],["Czy mogę zapłacić kartą?","我可以刷卡吗？"],["Czy można płacić gotówką?","可以付现金吗？"],["Gdzie jest kasa?","收银台在哪里？"],["Gdzie znajdę mleko?","牛奶在哪里？"],["Szukam chleba.","我在找面包。"],["Poproszę torbę.","请给我一个袋子。"],["Nie potrzebuję torby.","我不需要袋子。"],["To wszystko.","就这些。"],["Czy mogę dostać paragon?","可以给我收据吗？"],["Czy jest jakaś promocja?","有促销吗？"],["Czy to jest świeże?","这个新鲜吗？"],["Do kiedy jest ważne?","这个保质期到什么时候？"],["Poproszę pół kilo.","请给我半公斤。"],["Gdzie mogę to znaleźć?","在哪里能找到这个？"],["Czy macie to w innym rozmiarze?","你们有其他尺码吗？"],["Chciałbym to zwrócić.","我想退掉这个。（男性说话）"],["Chciałabym to zwrócić.","我想退掉这个。（女性说话）"]
+["Ile to kosztuje?","这个多少钱？"],
+["Poproszę to.","我要这个。"],
+["Wezmę to.","我买这个。"],
+["To za drogie.","这个太贵了。"],
+["Czy jest coś tańszego?","有便宜一点的吗？"],
+["Czy mogę zapłacić kartą?","我可以刷卡吗？"],
+["Czy można płacić gotówką?","可以付现金吗？"],
+["Gdzie jest kasa?","收银台在哪里？"],
+["Gdzie znajdę mleko?","牛奶在哪里？"],
+["Szukam chleba.","我在找面包。"],
+["Poproszę torbę.","请给我一个袋子。"],
+["Nie potrzebuję torby.","我不需要袋子。"],
+["To wszystko.","就这些。"],
+["Czy mogę dostać paragon?","可以给我收据吗？"],
+["Czy jest jakaś promocja?","有促销吗？"],
+["Czy to jest świeże?","这个新鲜吗？"],
+["Do kiedy jest ważne?","这个保质期到什么时候？"],
+["Poproszę pół kilo.","请给我半公斤。"],
+["Gdzie mogę to znaleźć?","在哪里能找到这个？"],
+["Czy macie to w innym rozmiarze?","你们有其他尺码吗？"],
+["Chciałbym to zwrócić.","我想退掉这个。（男性说话）"],
+["Chciałabym to zwrócić.","我想退掉这个。（女性说话）"]
 ],
 "餐厅点餐":[
-["Poproszę menu.","请给我菜单。"],["Co pan poleca?","您推荐什么？（对男性）"],["Co pani poleca?","您推荐什么？（对女性）"],["Poproszę wodę niegazowaną.","请给我无气水。"],["Poproszę kawę.","请给我一杯咖啡。"],["Poproszę herbatę.","请给我一杯茶。"],["Dla mnie to samo.","我也要一样的。"],["Czy to danie zawiera mięso?","这道菜含肉吗？"],["Nie jem mięsa.","我不吃肉。"],["Bez cebuli, proszę.","请不要放洋葱。"],["Na wynos, proszę.","请打包。"],["Na miejscu, proszę.","堂食，谢谢。"],["Czy mogę prosić o rachunek?","可以买单吗？"],["To jest bardzo dobre.","这个很好吃。"],["To nie jest moje zamówienie.","这不是我点的。"],["Brakuje jednego dania.","少了一道菜。"],["Czy mogę dostać wodę?","可以给我水吗？"],["Czy mogę usiąść tutaj?","我可以坐这里吗？"],["Stolik dla dwóch osób, proszę.","请给我们两个人的桌位。"],["Czy trzeba rezerwować stolik?","需要预订桌位吗？"]
+["Poproszę menu.","请给我菜单。"],
+["Co pan poleca?","您推荐什么？（对男性）"],
+["Co pani poleca?","您推荐什么？（对女性）"],
+["Poproszę wodę niegazowaną.","请给我无气水。"],
+["Poproszę kawę.","请给我一杯咖啡。"],
+["Poproszę herbatę.","请给我一杯茶。"],
+["Dla mnie to samo.","我也要一样的。"],
+["Czy to danie zawiera mięso?","这道菜含肉吗？"],
+["Nie jem mięsa.","我不吃肉。"],
+["Bez cebuli, proszę.","请不要放洋葱。"],
+["Na wynos, proszę.","请打包。"],
+["Na miejscu, proszę.","堂食，谢谢。"],
+["Czy mogę prosić o rachunek?","可以买单吗？"],
+["To jest bardzo dobre.","这个很好吃。"],
+["To nie jest moje zamówienie.","这不是我点的。"],
+["Brakuje jednego dania.","少了一道菜。"],
+["Czy mogę dostać wodę?","可以给我水吗？"],
+["Czy mogę usiąść tutaj?","我可以坐这里吗？"],
+["Stolik dla dwóch osób, proszę.","请给我们两个人的桌位。"],
+["Czy trzeba rezerwować stolik?","需要预订桌位吗？"]
 ],
 "交通出行":[
-["Gdzie jest przystanek autobusowy?","公交车站在哪里？"],["Gdzie jest dworzec kolejowy?","火车站在哪里？"],["O której odjeżdża autobus?","公交车几点发车？"],["O której odjeżdża pociąg?","火车几点发车？"],["Gdzie mogę kupić bilet?","我在哪里可以买票？"],["Ile kosztuje bilet?","车票多少钱？"],["Czy ten autobus jedzie do centrum?","这辆公交车去市中心吗？"],["Na którym przystanku mam wysiąść?","我应该在哪一站下车？"],["Gdzie jest peron numer dwa?","二号站台在哪里？"],["Czy ten pociąg jest opóźniony?","这趟火车晚点了吗？"],["Proszę jechać pod ten adres.","请开到这个地址。"],["Proszę się tutaj zatrzymać.","请在这里停车。"],["Skręć w lewo.","向左转。"],["Skręć w prawo.","向右转。"],["Proszę iść prosto.","请直走。"],["Zgubiłem się.","我迷路了。（男性说话）"],["Zgubiłam się.","我迷路了。（女性说话）"],["Gdzie jest najbliższy bankomat?","最近的ATM在哪里？"],["Czy mogę tu zaparkować?","我可以在这里停车吗？"],["Jak daleko stąd?","离这里有多远？"],["Czy można dojść tam pieszo?","可以步行到那里吗？"]
+["Gdzie jest przystanek autobusowy?","公交车站在哪里？"],
+["Gdzie jest dworzec kolejowy?","火车站在哪里？"],
+["O której odjeżdża autobus?","公交车几点发车？"],
+["O której odjeżdża pociąg?","火车几点发车？"],
+["Gdzie mogę kupić bilet?","我在哪里可以买票？"],
+["Ile kosztuje bilet?","车票多少钱？"],
+["Czy ten autobus jedzie do centrum?","这辆公交车去市中心吗？"],
+["Na którym przystanku mam wysiąść?","我应该在哪一站下车？"],
+["Gdzie jest peron numer dwa?","二号站台在哪里？"],
+["Czy ten pociąg jest opóźniony?","这趟火车晚点了吗？"],
+["Proszę jechać pod ten adres.","请开到这个地址。"],
+["Proszę się tutaj zatrzymać.","请在这里停车。"],
+["Skręć w lewo.","向左转。"],
+["Skręć w prawo.","向右转。"],
+["Proszę iść prosto.","请直走。"],
+["Zgubiłem się.","我迷路了。（男性说话）"],
+["Zgubiłam się.","我迷路了。（女性说话）"],
+["Gdzie jest najbliższy bankomat?","最近的ATM在哪里？"],
+["Czy mogę tu zaparkować?","我可以在这里停车吗？"],
+["Jak daleko stąd?","离这里有多远？"],
+["Czy można dojść tam pieszo?","可以步行到那里吗？"]
 ],
 "租房居家":[
-["Szukam mieszkania do wynajęcia.","我在找出租房。"],["Ile wynosi czynsz?","房租是多少？"],["Czy rachunki są wliczone?","水电等账单包含在内吗？"],["Czy mieszkanie jest umeblowane?","房子带家具吗？"],["Kiedy mogę obejrzeć mieszkanie?","我什么时候可以看房？"],["Czy mogę podpisać umowę?","我可以签合同吗？"],["Na jak długo jest umowa?","合同期限是多久？"],["Czy kaucja jest zwrotna?","押金可以退吗？"],["Nie działa ogrzewanie.","暖气坏了。"],["Nie ma ciepłej wody.","没有热水。"],["Nie działa internet.","网络不能用。"],["Gdzie wyrzuca się śmieci?","垃圾应该扔在哪里？"],["Czy mogę użyć pralki?","我可以用洗衣机吗？"],["Zgubiłem klucze.","我把钥匙弄丢了。（男性说话）"],["Zgubiłam klucze.","我把钥匙弄丢了。（女性说话）"],["Czy mogę dostać dodatkowy klucz?","可以再给我一把钥匙吗？"],["Sąsiedzi są bardzo głośni.","邻居很吵。"],["Czy mogę zapłacić przelewem?","我可以银行转账吗？"]
+["Szukam mieszkania do wynajęcia.","我在找出租房。"],
+["Ile wynosi czynsz?","房租是多少？"],
+["Czy rachunki są wliczone?","水电等账单包含在内吗？"],
+["Czy mieszkanie jest umeblowane?","房子带家具吗？"],
+["Kiedy mogę obejrzeć mieszkanie?","我什么时候可以看房？"],
+["Czy mogę podpisać umowę?","我可以签合同吗？"],
+["Na jak długo jest umowa?","合同期限是多久？"],
+["Czy kaucja jest zwrotna?","押金可以退吗？"],
+["Nie działa ogrzewanie.","暖气坏了。"],
+["Nie ma ciepłej wody.","没有热水。"],
+["Nie działa internet.","网络不能用。"],
+["Gdzie wyrzuca się śmieci?","垃圾应该扔在哪里？"],
+["Czy mogę użyć pralki?","我可以用洗衣机吗？"],
+["Zgubiłem klucze.","我把钥匙弄丢了。（男性说话）"],
+["Zgubiłam klucze.","我把钥匙弄丢了。（女性说话）"],
+["Czy mogę dostać dodatkowy klucz?","可以再给我一把钥匙吗？"],
+["Sąsiedzi są bardzo głośni.","邻居很吵。"],
+["Czy mogę zapłacić przelewem?","我可以银行转账吗？"]
 ],
 "工作求职":[
-["Szukam pracy.","我在找工作。"],["Czy oferta jest nadal aktualna?","这个招聘信息还有效吗？"],["Jakie są godziny pracy?","工作时间是怎样的？"],["Ile wynosi wynagrodzenie?","工资是多少？"],["Kiedy mogę zacząć?","我什么时候可以开始？"],["Szybko się uczę.","我学东西很快。"],["Mogę pracować na zmiany.","我可以轮班。"],["Czy jest możliwość nadgodzin?","可以加班吗？"],["Gdzie mam się zgłosić?","我应该去哪里报到？"],["Proszę pokazać mi, jak to zrobić.","请示范一下怎么做。"],["Potrzebuję pomocy.","我需要帮助。"],["Mam dziś wolne.","我今天休息。"],["Spóźnię się dziesięć minut.","我会迟到十分钟。"],["Kiedy jest przerwa?","什么时候休息？"],["Dziękuję za pomoc.","谢谢你的帮助。"],["Do której dziś pracujemy?","我们今天工作到几点？"],["Czy mogę dostać kopię umowy?","可以给我一份合同副本吗？"],["Nie rozumiem tego polecenia.","我不明白这个指令。"],["Czy muszę podpisać ten dokument?","我需要签这份文件吗？"]
+["Szukam pracy.","我在找工作。"],
+["Czy oferta jest nadal aktualna?","这个招聘信息还有效吗？"],
+["Jakie są godziny pracy?","工作时间是怎样的？"],
+["Ile wynosi wynagrodzenie?","工资是多少？"],
+["Kiedy mogę zacząć?","我什么时候可以开始？"],
+["Szybko się uczę.","我学东西很快。"],
+["Mogę pracować na zmiany.","我可以轮班。"],
+["Czy jest możliwość nadgodzin?","可以加班吗？"],
+["Gdzie mam się zgłosić?","我应该去哪里报到？"],
+["Proszę pokazać mi, jak to zrobić.","请示范一下怎么做。"],
+["Potrzebuję pomocy.","我需要帮助。"],
+["Mam dziś wolne.","我今天休息。"],
+["Spóźnię się dziesięć minut.","我会迟到十分钟。"],
+["Kiedy jest przerwa?","什么时候休息？"],
+["Dziękuję za pomoc.","谢谢你的帮助。"],
+["Do której dziś pracujemy?","我们今天工作到几点？"],
+["Czy mogę dostać kopię umowy?","可以给我一份合同副本吗？"],
+["Nie rozumiem tego polecenia.","我不明白这个指令。"],
+["Czy muszę podpisać ten dokument?","我需要签这份文件吗？"]
 ],
 "政府手续与银行":[
-["Mam umówioną wizytę.","我预约了。"],["Jakie dokumenty są potrzebne?","需要哪些文件？"],["Czy czegoś brakuje?","还缺什么材料吗？"],["Gdzie mam złożyć wniosek?","我应该在哪里提交申请？"],["Ile to potrwa?","这需要多长时间？"],["Kiedy dostanę odpowiedź?","我什么时候能收到答复？"],["Czy mogę dostać potwierdzenie?","可以给我确认凭证吗？"],["Mam paszport.","我有护照。"],["Potrzebuję tłumacza.","我需要翻译。"],["Czy tłumacz przysięgły jest wymagany?","需要宣誓翻译吗？"],["Gdzie mogę zapłacić opłatę?","我在哪里可以缴费？"],["Chcę wypłacić gotówkę.","我想取现金。"],["Chcę wpłacić pieniądze.","我想存钱。"],["Jaki jest numer konta?","账号是多少？"],["Gdzie mam podpisać?","我应该在哪里签字？"],["Czy potrzebny jest oryginał?","需要原件吗？"],["Czy mogę wysłać dokumenty pocztą?","我可以邮寄文件吗？"],["Chcę zablokować kartę.","我想冻结银行卡。"]
+["Mam umówioną wizytę.","我预约了。"],
+["Jakie dokumenty są potrzebne?","需要哪些文件？"],
+["Czy czegoś brakuje?","还缺什么材料吗？"],
+["Gdzie mam złożyć wniosek?","我应该在哪里提交申请？"],
+["Ile to potrwa?","这需要多长时间？"],
+["Kiedy dostanę odpowiedź?","我什么时候能收到答复？"],
+["Czy mogę dostać potwierdzenie?","可以给我确认凭证吗？"],
+["Mam paszport.","我有护照。"],
+["Potrzebuję tłumacza.","我需要翻译。"],
+["Czy tłumacz przysięgły jest wymagany?","需要宣誓翻译吗？"],
+["Gdzie mogę zapłacić opłatę?","我在哪里可以缴费？"],
+["Chcę wypłacić gotówkę.","我想取现金。"],
+["Chcę wpłacić pieniądze.","我想存钱。"],
+["Jaki jest numer konta?","账号是多少？"],
+["Gdzie mam podpisać?","我应该在哪里签字？"],
+["Czy potrzebny jest oryginał?","需要原件吗？"],
+["Czy mogę wysłać dokumenty pocztą?","我可以邮寄文件吗？"],
+["Chcę zablokować kartę.","我想冻结银行卡。"]
 ],
 "医疗药房":[
-["Źle się czuję.","我感觉不舒服。"],["Potrzebuję lekarza.","我需要看医生。"],["Czy mogę umówić wizytę?","我可以预约吗？"],["Boli mnie głowa.","我头疼。"],["Boli mnie brzuch.","我肚子疼。"],["Boli mnie gardło.","我喉咙疼。"],["Mam gorączkę.","我发烧了。"],["Mam kaszel.","我咳嗽。"],["Mam katar.","我流鼻涕。"],["Mam alergię na ten lek.","我对这种药过敏。"],["Czy potrzebuję recepty?","我需要处方吗？"],["Jak często mam to brać?","我应该多久服用一次？"],["Proszę wezwać karetkę.","请叫救护车。"],["To pilne.","这很紧急。"],["Nie mogę oddychać.","我无法呼吸。"],["Mam zawroty głowy.","我头晕。"],["Gdzie jest najbliższa apteka?","最近的药房在哪里？"],["Czy ten lek powoduje senność?","这种药会让人犯困吗？"]
+["Źle się czuję.","我感觉不舒服。"],
+["Potrzebuję lekarza.","我需要看医生。"],
+["Czy mogę umówić wizytę?","我可以预约吗？"],
+["Boli mnie głowa.","我头疼。"],
+["Boli mnie brzuch.","我肚子疼。"],
+["Boli mnie gardło.","我喉咙疼。"],
+["Mam gorączkę.","我发烧了。"],
+["Mam kaszel.","我咳嗽。"],
+["Mam katar.","我流鼻涕。"],
+["Mam alergię na ten lek.","我对这种药过敏。"],
+["Czy potrzebuję recepty?","我需要处方吗？"],
+["Jak często mam to brać?","我应该多久服用一次？"],
+["Proszę wezwać karetkę.","请叫救护车。"],
+["To pilne.","这很紧急。"],
+["Nie mogę oddychać.","我无法呼吸。"],
+["Mam zawroty głowy.","我头晕。"],
+["Gdzie jest najbliższa apteka?","最近的药房在哪里？"],
+["Czy ten lek powoduje senność?","这种药会让人犯困吗？"]
 ],
 "电话与快递":[
-["Halo, słucham.","喂，我在听。"],["Czy dobrze mnie słychać?","你能听清我说话吗？"],["Oddzwonię później.","我晚点回电话。"],["Nie mogę teraz rozmawiać.","我现在不方便说话。"],["Jaki jest kod pocztowy?","邮政编码是多少？"],["Jakie jest hasło do Wi-Fi?","Wi-Fi密码是什么？"],["Nie mam zasięgu.","我没有信号。"],["Proszę wysłać mi wiadomość.","请给我发条消息。"],["Kiedy będzie dostawa?","什么时候送货？"],["Chcę odebrać paczkę.","我想取包裹。"],["Mam numer przesyłki.","我有快递单号。"],["Gdzie jest punkt odbioru?","取件点在哪里？"],["Nie było mnie w domu.","我当时不在家。"],["Czy można zmienić termin dostawy?","可以更改配送时间吗？"],["Proszę zostawić paczkę pod drzwiami.","请把包裹放在门口。"],["Paczka jest uszkodzona.","包裹损坏了。"],["Czy mogę śledzić przesyłkę?","我可以追踪快递吗？"]
+["Halo, słucham.","喂，我在听。"],
+["Czy dobrze mnie słychać?","你能听清我说话吗？"],
+["Oddzwonię później.","我晚点回电话。"],
+["Nie mogę teraz rozmawiać.","我现在不方便说话。"],
+["Jaki jest kod pocztowy?","邮政编码是多少？"],
+["Jakie jest hasło do Wi-Fi?","Wi-Fi密码是什么？"],
+["Nie mam zasięgu.","我没有信号。"],
+["Proszę wysłać mi wiadomość.","请给我发条消息。"],
+["Kiedy będzie dostawa?","什么时候送货？"],
+["Chcę odebrać paczkę.","我想取包裹。"],
+["Mam numer przesyłki.","我有快递单号。"],
+["Gdzie jest punkt odbioru?","取件点在哪里？"],
+["Nie było mnie w domu.","我当时不在家。"],
+["Czy można zmienić termin dostawy?","可以更改配送时间吗？"],
+["Proszę zostawić paczkę pod drzwiami.","请把包裹放在门口。"],
+["Paczka jest uszkodzona.","包裹损坏了。"],
+["Czy mogę śledzić przesyłkę?","我可以追踪快递吗？"]
 ],
 "社交日常":[
-["Masz chwilę?","你有空吗？"],["Co robisz w weekend?","你周末做什么？"],["Masz ochotę na kawę?","想喝杯咖啡吗？"],["Chętnie.","我很乐意。"],["Niestety nie mogę.","很遗憾，我不行。"],["O której się spotykamy?","我们几点见面？"],["Gdzie się spotykamy?","我们在哪里见？"],["Będę za dziesięć minut.","我十分钟后到。"],["Już jestem na miejscu.","我已经到了。"],["Przepraszam za spóźnienie.","抱歉我迟到了。"],["Dzisiaj nie mam czasu.","我今天没时间。"],["Może innym razem.","也许下次吧。"],["To dobry pomysł.","这是个好主意。"],["Co o tym myślisz?","你对此怎么看？"],["Masz rację.","你说得对。"],["Nie zgadzam się.","我不同意。"],["To zależy.","这要看情况。"],["Nie martw się.","别担心。"],["Uważaj na siebie.","照顾好自己。"],["Daj mi znać.","告诉我一声。"],["Odezwę się później.","我晚点联系你。"],["Dzięki za zaproszenie.","谢谢你的邀请。"],["Zapraszam do środka.","请进。"],["Smacznego!","祝你用餐愉快！"],["Na zdrowie!","干杯！/祝健康！"]
+["Masz chwilę?","你有空吗？"],
+["Co robisz w weekend?","你周末做什么？"],
+["Masz ochotę na kawę?","想喝杯咖啡吗？"],
+["Chętnie.","我很乐意。"],
+["Niestety nie mogę.","很遗憾，我不行。"],
+["O której się spotykamy?","我们几点见面？"],
+["Gdzie się spotykamy?","我们在哪里见？"],
+["Będę za dziesięć minut.","我十分钟后到。"],
+["Już jestem na miejscu.","我已经到了。"],
+["Przepraszam za spóźnienie.","抱歉我迟到了。"],
+["Dzisiaj nie mam czasu.","我今天没时间。"],
+["Może innym razem.","也许下次吧。"],
+["To dobry pomysł.","这是个好主意。"],
+["Co o tym myślisz?","你对此怎么看？"],
+["Masz rację.","你说得对。"],
+["Nie zgadzam się.","我不同意。"],
+["To zależy.","这要看情况。"],
+["Nie martw się.","别担心。"],
+["Uważaj na siebie.","照顾好自己。"],
+["Daj mi znać.","告诉我一声。"],
+["Odezwę się później.","我晚点联系你。"],
+["Dzięki za zaproszenie.","谢谢你的邀请。"],
+["Zapraszam do środka.","请进。"],
+["Smacznego!","祝你用餐愉快！"],
+["Na zdrowie!","干杯！/祝健康！"]
 ],
 "紧急求助":[
-["Proszę mi pomóc!","请帮帮我！"],["Proszę zadzwonić na policję.","请报警。"],["Zgubiłem portfel.","我钱包丢了。（男性说话）"],["Zgubiłam portfel.","我钱包丢了。（女性说话）"],["Skradziono mi telefon.","我的手机被偷了。"],["Gdzie jest komisariat policji?","警察局在哪里？"],["Nie czuję się bezpiecznie.","我觉得不安全。"],["Proszę wezwać pomoc.","请叫人来帮忙。"],["Proszę zostawić mnie w spokoju.","请别来打扰我。"],["Gdzie jest wyjście?","出口在哪里？"],["Uwaga!","小心！"],["Nie znam tej osoby.","我不认识这个人。"],["Potrzebuję tłumacza chińskiego.","我需要中文翻译。"],["Czy może mi pan pomóc?","您能帮我吗？（对男性）"],["Czy może mi pani pomóc?","您能帮我吗？（对女性）"]
+["Proszę mi pomóc!","请帮帮我！"],
+["Proszę zadzwonić na policję.","请报警。"],
+["Zgubiłem portfel.","我钱包丢了。（男性说话）"],
+["Zgubiłam portfel.","我钱包丢了。（女性说话）"],
+["Skradziono mi telefon.","我的手机被偷了。"],
+["Gdzie jest komisariat policji?","警察局在哪里？"],
+["Nie czuję się bezpiecznie.","我觉得不安全。"],
+["Proszę wezwać pomoc.","请叫人来帮忙。"],
+["Proszę zostawić mnie w spokoju.","请别来打扰我。"],
+["Gdzie jest wyjście?","出口在哪里？"],
+["Uwaga!","小心！"],
+["Nie znam tej osoby.","我不认识这个人。"],
+["Potrzebuję tłumacza chińskiego.","我需要中文翻译。"],
+["Czy może mi pan pomóc?","您能帮我吗？（对男性）"],
+["Czy może mi pani pomóc?","您能帮我吗？（对女性）"]
 ],
 "时间与理解":[
-["Która jest godzina?","现在几点？"],["Dzisiaj.","今天。"],["Jutro.","明天。"],["Wczoraj.","昨天。"],["Później.","晚一点。"],["O której godzinie?","几点？"],["W poniedziałek.","星期一。"],["W przyszłym tygodniu.","下周。"],["Jak długo to potrwa?","这要持续多久？"],["Nie jestem stąd.","我不是本地人。"],["Proszę pokazać mi na mapie.","请在地图上指给我看。"],["Co mam teraz zrobić?","我现在应该做什么？"],["Czy to jest obowiązkowe?","这是必须的吗？"],["Czy to jest bezpłatne?","这是免费的吗？"],["Czy muszę czekać?","我必须等吗？"],["Ile mam zapłacić?","我应该付多少钱？"],["Czy dobrze rozumiem?","我理解得对吗？"],["Proszę mówić wyraźnie.","请说清楚一点。"]
+["Która jest godzina?","现在几点？"],
+["Dzisiaj.","今天。"],
+["Jutro.","明天。"],
+["Wczoraj.","昨天。"],
+["Później.","晚一点。"],
+["O której godzinie?","几点？"],
+["W poniedziałek.","星期一。"],
+["W przyszłym tygodniu.","下周。"],
+["Jak długo to potrwa?","这要持续多久？"],
+["Nie jestem stąd.","我不是本地人。"],
+["Proszę pokazać mi na mapie.","请在地图上指给我看。"],
+["Co mam teraz zrobić?","我现在应该做什么？"],
+["Czy to jest obowiązkowe?","这是必须的吗？"],
+["Czy to jest bezpłatne?","这是免费的吗？"],
+["Czy muszę czekać?","我必须等吗？"],
+["Ile mam zapłacić?","我应该付多少钱？"],
+["Czy dobrze rozumiem?","我理解得对吗？"],
+["Proszę mówić wyraźnie.","请说清楚一点。"]
 ]
 };
 
-const sentences=Object.entries(groups).flatMap(([cat,arr],g)=>arr.map((x,i)=>({id:g+"-"+i,cat,pl:x[0],cn:x[1]})));
-const KEY="polski-daily-progress-v1";
-let progress={learned:[],later:[]},view="learn",current=null,query="";
+const sentences = Object.entries(groups).flatMap(([cat, arr], g) =>
+    arr.map((x, i) => ({id: g + "-" + i, cat, pl: x[0], cn: x[1]}))
+);
 
-// 读取本地缓存（具备自动记忆功能）
-try{
- const saved=localStorage.getItem(KEY);
- if(saved) progress={...progress,...JSON.parse(saved)};
-}catch(e){console.error("读取缓存失败", e);}
+const KEY = "polski-daily-progress-v1";
+let progress = {learned: [], later: []};
+let view = "learn";
+let current = null;
+let query = "";
 
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-// 保存到本地缓存
-function save(){
- try{
-  localStorage.setItem(KEY,JSON.stringify(progress));
- }catch(e){console.error("保存缓存失败", e);}
+/* 读取学习进度 */
+try {
+    const saved = localStorage.getItem(KEY);
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        progress = {
+            learned: Array.isArray(parsed.learned) ? parsed.learned : [],
+            later: Array.isArray(parsed.later) ? parsed.later : []
+        };
+    }
+} catch (e) {
+    console.error("读取缓存失败", e);
 }
 
-function toast(s){const t=$("#toast");t.textContent=s;t.style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display="none",1800)}
+const $ = s => document.querySelector(s);
 
-// 语音朗读（使用浏览器内置 TTS，解决 GitHub 的 HTTPS 外链拦截问题）
-function speak(text){
- if(!("speechSynthesis"in window)){toast("此浏览器不支持语音朗读");return}
- speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(text);
- u.lang="pl-PL";
- u.rate=.88;
- const voices=speechSynthesis.getVoices();
- const v=voices.find(x=>x.lang.toLowerCase()==="pl-pl")||voices.find(x=>x.lang.toLowerCase().startsWith("pl"));
- if(v)u.voice=v;
- speechSynthesis.speak(u);
-}
-if("speechSynthesis" in window){
- window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+}[c]));
+
+/* 保存学习进度 */
+function save() {
+    try {
+        localStorage.setItem(KEY, JSON.stringify(progress));
+    } catch (e) {
+        console.error("保存缓存失败", e);
+        toast("无法保存进度，请检查浏览器设置");
+    }
 }
 
-function nextSentence(){return sentences.find(s=>!progress.learned.includes(s.id)&&!progress.later.includes(s.id))||sentences.find(s=>!progress.learned.includes(s.id))||sentences[0]}
-function counts(){
- $("#todoCount").textContent=sentences.length-progress.learned.length;
- $("#learnedCount").textContent=progress.learned.length;
- $("#laterCount").textContent=progress.later.length;
- $("#allCount").textContent=sentences.length;
- document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+let toastTimer;
+
+function toast(message) {
+    const el = $("#toast");
+    el.textContent = message;
+    el.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        el.style.display = "none";
+    }, 2500);
 }
-function render(){
- counts();const main=$("#main");
- if(view==="learn"){
-  if(!current||!sentences.some(s=>s.id===current)||progress.learned.includes(current))current=nextSentence().id;
-  const s=sentences.find(x=>x.id===current);
-  main.innerHTML=`<div class="meta"><span class="tag">${esc(s.cat)}</span><span>已学会 ${progress.learned.length} / ${sentences.length}</span></div>
-  <div class="progress"><div style="width:${progress.learned.length/sentences.length*100}%"></div></div>
-  <div class="kicker">POLSKI DAILY · 生活高频句</div>
-  <div class="sentence"><h2 class="polish">${esc(s.pl)}</h2><button class="play" aria-label="播放发音" onclick="playId('${s.id}')">▶</button></div>
-  <p class="translation">${esc(s.cn)}</p>
-  <p class="tip">先听发音，再大声跟读。您的学习进度已自动保存在当前浏览器中，下次打开会直接恢复。</p>
-  <div class="actions"><button class="btn good" onclick="learn('${s.id}')">✓ 我学会了</button><button class="btn later" onclick="defer('${s.id}')">◷ 以后再学</button><button class="btn primary" onclick="playId('${s.id}')">▶ 再听一次</button></div>`;
- }else{
-  const title={learned:"已学会",later:"以后再学",all:"全部句子"}[view];
-  let arr=sentences.filter(s=>view==="all"||(view==="learned"?progress.learned:progress.later).includes(s.id));
-  if(query)arr=arr.filter(s=>(s.pl+" "+s.cn+" "+s.cat).toLowerCase().includes(query.toLowerCase()));
-  main.innerHTML=`<div class="meta"><span class="tag">句子库</span><span>${arr.length} 个句子</span></div><h2>${title}</h2><input class="search" id="search" placeholder="搜索波兰语、中文或场景…" value="${esc(query)}"><div class="list">${arr.length?arr.map(s=>`<div class="item"><div class="item-main"><p class="item-pl">${esc(s.pl)}</p><p class="item-cn">${esc(s.cn)} ·${esc(s.cat)}</p></div><button aria-label="播放发音" onclick="playId('${s.id}')">▶</button>${progress.learned.includes(s.id)?`<button onclick="unlearn('${s.id}')">↶</button>`:`<button onclick="learn('${s.id}',true)">✓</button>`}${progress.later.includes(s.id)?`<button onclick="undefer('${s.id}')">＋</button>`:`<button onclick="defer('${s.id}',true)">◷</button>`}</div>`).join(""):'<div class="empty">这里暂时没有句子。</div>'}</div><div class="actions"><button class="btn primary" onclick="setView('learn')">返回逐句学习</button></div>`;
-  $("#search").addEventListener("input",e=>{const p=e.target.selectionStart;query=e.target.value;render();$("#search").focus();$("#search").setSelectionRange(p,p)});
- }
+
+/*
+ * Google 翻译波兰语语音
+ *
+ * 注意：
+ * translate_tts 是 Google 翻译网页使用的非正式接口，
+ * 不是稳定的官方开发者 API。
+ * 如果 Google 限流或拒绝请求，语音可能无法播放。
+ */
+let googleAudio = null;
+let audioRequestId = 0;
+
+function speak(text) {
+    const requestId = ++audioRequestId;
+
+    if (googleAudio) {
+        googleAudio.pause();
+        googleAudio.removeAttribute("src");
+        googleAudio.load();
+        googleAudio = null;
+    }
+
+    const url =
+        "https://translate.google.com/translate_tts" +
+        "?ie=UTF-8" +
+        "&client=tw-ob" +
+        "&tl=pl" +
+        "&q=" + encodeURIComponent(text);
+
+    const audio = new Audio();
+    googleAudio = audio;
+    audio.preload = "auto";
+
+    audio.oncanplay = () => {
+        if (requestId !== audioRequestId) return;
+    };
+
+    audio.onerror = () => {
+        if (requestId !== audioRequestId) return;
+        toast("Google 语音加载失败，请检查网络后重试");
+    };
+
+    audio.onended = () => {
+        if (requestId === audioRequestId) googleAudio = null;
+    };
+
+    audio.src = url;
+
+    audio.play().catch(() => {
+        if (requestId === audioRequestId) {
+            toast("无法播放 Google 语音，请检查网络或浏览器设置");
+        }
+    });
 }
-function playId(id){const s=sentences.find(x=>x.id===id);if(s)speak(s.pl)}
-function learn(id,stay=false){if(!progress.learned.includes(id))progress.learned.push(id);progress.later=progress.later.filter(x=>x!==id);save();toast("已保存到「已学会」");if(view==="learn"&&!stay)current=nextSentence().id;render()}
-function defer(id,stay=false){if(!progress.learned.includes(id)&&!progress.later.includes(id))progress.later.push(id);save();toast("已保存到「以后再学」");if(view==="learn"&&!stay)current=nextSentence().id;render()}
-function unlearn(id){progress.learned=progress.learned.filter(x=>x!==id);save();render()}
-function undefer(id){progress.later=progress.later.filter(x=>x!==id);save();render()}
-function setView(v){view=v;query="";render()}
-document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
-document.addEventListener("keydown",e=>{if(view!=="learn"||["INPUT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.key==="Enter"&&current)learn(current);if(e.key==="ArrowLeft"&&current)defer(current)});
+
+/* 获取下一句 */
+function nextSentence() {
+    return sentences.find(s =>
+        !progress.learned.includes(s.id) &&
+        !progress.later.includes(s.id)
+    ) || sentences.find(s =>
+        !progress.learned.includes(s.id)
+    ) || sentences[0];
+}
+
+/* 更新计数 */
+function counts() {
+    $("#todoCount").textContent =
+        sentences.filter(s => !progress.learned.includes(s.id)).length;
+
+    $("#learnedCount").textContent = progress.learned.length;
+    $("#laterCount").textContent = progress.later.length;
+    $("#allCount").textContent = sentences.length;
+
+    document.querySelectorAll("nav button").forEach(button => {
+        button.classList.toggle("active", button.dataset.view === view);
+    });
+}
+
+/* 页面渲染 */
+function render() {
+    counts();
+    const main = $("#main");
+
+    if (view === "learn") {
+        if (
+            !current ||
+            !sentences.some(s => s.id === current) ||
+            progress.learned.includes(current)
+        ) {
+            current = nextSentence().id;
+        }
+
+        const s = sentences.find(x => x.id === current);
+
+        main.innerHTML = `
+            <div class="meta">
+                <span class="tag">${esc(s.cat)}</span>
+                <span>已学会 ${progress.learned.length} / ${sentences.length}</span>
+            </div>
+
+            <div class="progress">
+                <div style="width:${progress.learned.length / sentences.length * 100}%"></div>
+            </div>
+
+            <div class="kicker">POLSKI DAILY · 生活高频句</div>
+
+            <div class="sentence">
+                <h2 class="polish">${esc(s.pl)}</h2>
+                <button class="play" aria-label="播放 Google 波兰语发音"
+                    onclick="playId('${s.id}')">▶</button>
+            </div>
+
+            <p class="translation">${esc(s.cn)}</p>
+
+            <p class="tip">
+                点击播放按钮听波兰语发音，然后大声跟读。
+                学习进度自动保存在当前浏览器中。
+            </p>
+
+            <div class="actions">
+                <button class="btn good" onclick="learn('${s.id}')">✓ 我学会了</button>
+                <button class="btn later" onclick="defer('${s.id}')">◷ 以后再学</button>
+                <button class="btn primary" onclick="playId('${s.id}')">▶ 再听一次</button>
+            </div>
+        `;
+    } else {
+        const titles = {
+            learned: "已学会",
+            later: "以后再学",
+            all: "全部句子"
+        };
+
+        let arr = sentences.filter(s =>
+            view === "all" ||
+            (view === "learned"
+                ? progress.learned.includes(s.id)
+                : progress.later.includes(s.id))
+        );
+
+        if (query) {
+            arr = arr.filter(s =>
+                (s.pl + " " + s.cn + " " + s.cat)
+                    .toLowerCase()
+                    .includes(query.toLowerCase())
+            );
+        }
+
+        main.innerHTML = `
+            <div class="meta">
+                <span class="tag">句子库</span>
+                <span>${arr.length} 个句子</span>
+            </div>
+
+            <h2>${titles[view]}</h2>
+
+            <input class="search" id="search"
+                placeholder="搜索波兰语、中文或场景…"
+                value="${esc(query)}">
+
+            <div class="list">
+                ${arr.length ? arr.map(s => `
+                    <div class="item">
+                        <div class="item-main">
+                            <p class="item-pl">${esc(s.pl)}</p>
+                            <p class="item-cn">${esc(s.cn)} · ${esc(s.cat)}</p>
+                        </div>
+
+                        <button aria-label="播放 Google 波兰语发音"
+                            onclick="playId('${s.id}')">▶</button>
+
+                        ${progress.learned.includes(s.id)
+                            ? `<button onclick="unlearn('${s.id}')">↶</button>`
+                            : `<button onclick="learn('${s.id}',true)">✓</button>`}
+
+                        ${progress.later.includes(s.id)
+                            ? `<button onclick="undefer('${s.id}')">＋</button>`
+                            : `<button onclick="defer('${s.id}',true)">◷</button>`}
+                    </div>
+                `).join("") : `
+                    <div class="empty">这里暂时没有句子。</div>
+                `}
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" onclick="setView('learn')">
+                    返回逐句学习
+                </button>
+            </div>
+        `;
+
+        const search = $("#search");
+
+        search.addEventListener("input", e => {
+            const position = e.target.selectionStart;
+            query = e.target.value;
+            render();
+
+            const newSearch = $("#search");
+            newSearch.focus();
+            newSearch.setSelectionRange(position, position);
+        });
+    }
+}
+
+/* 播放指定句子的波兰语语音 */
+function playId(id) {
+    const s = sentences.find(x => x.id === id);
+    if (s) speak(s.pl);
+}
+
+/* 标记为已学会 */
+function learn(id, stay = false) {
+    if (!progress.learned.includes(id)) {
+        progress.learned.push(id);
+    }
+
+    progress.later = progress.later.filter(x => x !== id);
+
+    save();
+    toast("已保存到「已学会」");
+
+    if (view === "learn" && !stay) {
+        current = nextSentence().id;
+    }
+
+    render();
+}
+
+/* 标记为以后再学 */
+function defer(id, stay = false) {
+    if (
+        !progress.learned.includes(id) &&
+        !progress.later.includes(id)
+    ) {
+        progress.later.push(id);
+    }
+
+    save();
+    toast("已保存到「以后再学」");
+
+    if (view === "learn" && !stay) {
+        current = nextSentence().id;
+    }
+
+    render();
+}
+
+/* 取消已学会 */
+function unlearn(id) {
+    progress.learned = progress.learned.filter(x => x !== id);
+    save();
+    render();
+}
+
+/* 移出以后再学 */
+function undefer(id) {
+    progress.later = progress.later.filter(x => x !== id);
+    save();
+    render();
+}
+
+/* 切换页面 */
+function setView(v) {
+    view = v;
+    query = "";
+    render();
+}
+
+document.querySelectorAll("nav button").forEach(button => {
+    button.addEventListener("click", () => setView(button.dataset.view));
+});
+
+/* 键盘快捷键：Enter 学会，左方向键稍后再学 */
+document.addEventListener("keydown", e => {
+    if (
+        view !== "learn" ||
+        ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+    ) return;
+
+    if (e.key === "Enter" && current) learn(current);
+    if (e.key === "ArrowLeft" && current) defer(current);
+});
+
+/* 启动 */
 render();
 </script>
 </body>
