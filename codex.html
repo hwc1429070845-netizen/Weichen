@@ -1,0 +1,992 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>Polski Daily — 波兰语日常口语</title>
+  <style>
+    :root {
+      --primary: #315efb;
+      --primary-light: #edf1ff;
+      --bg: #f7f8fc;
+      --card: #ffffff;
+      --text: #182033;
+      --muted: #778096;
+      --border: #e8ebf2;
+      --green: #14865c;
+      --orange: #c77819;
+      --shadow: 0 5px 22px rgba(24, 32, 51, .045);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(100% - 32px, 1000px);
+      margin: 0 auto;
+      padding: 28px 0 60px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 34px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 45px;
+      height: 45px;
+      border-radius: 14px;
+      background: var(--primary);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .brand-name { font-size: 19px; font-weight: 800; }
+    .brand-sub { font-size: 12px; color: var(--muted); }
+
+    .progress-pill {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 8px 13px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .hero { margin-bottom: 25px; }
+
+    .eyebrow {
+      color: var(--primary);
+      font-weight: 750;
+      font-size: 12px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -1.3px;
+      margin: 10px 0;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 600px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .stat-number { font-size: 25px; font-weight: 800; }
+    .stat-label { font-size: 12px; color: var(--muted); }
+
+    .toolbar {
+      background: white;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-wrap { position: relative; }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fafbfe;
+      padding: 13px 14px 13px 42px;
+      outline: none;
+      color: var(--text);
+    }
+
+    #search:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(49, 94, 251, .1);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--border);
+      background: white;
+      color: #596277;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      transition: .15s;
+    }
+
+    .filter-btn:hover { border-color: #b8c5ff; }
+
+    .filter-btn.active {
+      background: var(--primary-light);
+      border-color: #d5ddff;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 27px 0 13px;
+    }
+
+    .section-heading h2 { margin: 0; font-size: 19px; }
+    #result-count { color: var(--muted); font-size: 13px; }
+
+    .sentence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sentence-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: border-color .15s;
+    }
+
+    .sentence-card.learned {
+      border-color: #bce8d4;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .sentence-main { min-width: 0; flex: 1; }
+
+    .category {
+      display: inline-block;
+      background: #f0f2f8;
+      color: #69738a;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 3px 7px;
+      margin-bottom: 9px;
+    }
+
+    .polish {
+      font-size: clamp(18px, 3vw, 21px);
+      font-weight: 750;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .chinese {
+      margin-top: 5px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .play-btn {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 14px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      transition: .15s;
+    }
+
+    .play-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.04);
+    }
+
+    .play-btn:disabled {
+      opacity: .5;
+      cursor: wait;
+      transform: none;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-top: 1px solid #f0f1f5;
+      margin-top: 15px;
+      padding-top: 12px;
+    }
+
+    .action-btn {
+      border: 1px solid var(--border);
+      background: white;
+      color: #69738a;
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .action-btn:hover { background: #f7f8fc; }
+
+    .action-btn.is-learned {
+      color: var(--green);
+      border-color: #bce8d4;
+      background: #f0fbf5;
+    }
+
+    .action-btn.is-later {
+      color: var(--orange);
+      border-color: #f1d8b5;
+      background: #fff8ed;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      color: var(--muted);
+    }
+
+    .empty-icon { font-size: 34px; margin-bottom: 8px; }
+
+    .notice {
+      margin-top: 24px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #68738a;
+      background: #eef1f8;
+      font-size: 12px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: #9aa1b1;
+    }
+
+    @media (max-width: 560px) {
+      .app { width: min(100% - 22px, 1000px); padding-top: 18px; }
+      .topbar { margin-bottom: 27px; }
+      .stats { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat-number { font-size: 21px; }
+      .toolbar { padding: 12px; }
+      .sentence-card { padding: 15px; }
+      .filters { gap: 6px; }
+      .filter-btn { padding: 7px 9px; font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">PL</div>
+        <div>
+          <div class="brand-name">Polski Daily</div>
+          <div class="brand-sub">波兰语日常口语 · 每天进步一点</div>
+        </div>
+      </div>
+      <div class="progress-pill" id="progress-pill">已掌握 0 句</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">PRACTICAL POLISH</div>
+      <h1>学会说，而不只是背。</h1>
+      <p>从真实生活中的高频句子开始。听发音、看中文、反复练习，逐渐把波兰语变成你能直接说出口的语言。</p>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-number" id="total-stat">0</div>
+        <div class="stat-label">全部句子</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="learned-stat">0</div>
+        <div class="stat-label">已经学会</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" id="later-stat">0</div>
+        <div class="stat-label">稍后学习</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="search" type="search"
+          placeholder="搜索波兰语、中文或生活场景……"
+          autocomplete="off">
+      </div>
+
+      <div class="filters" id="category-filters"></div>
+
+      <div class="filters" id="status-filters">
+        <button class="filter-btn active" data-status="all">全部句子</button>
+        <button class="filter-btn" data-status="unlearned">还没学会</button>
+        <button class="filter-btn" data-status="learned">已经学会</button>
+        <button class="filter-btn" data-status="later">稍后学习</button>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <h2 id="list-title">日常实用句子</h2>
+      <span id="result-count">0 句</span>
+    </div>
+
+    <section id="sentence-list" class="sentence-list"></section>
+
+    <div class="notice">
+      🔊 发音说明：先尝试 Google 翻译的波兰语语音；如果无法连接或播放失败，会自动切换到设备浏览器支持的波兰语语音。Google 网页接口并非稳定的官方公开 API，因此备用语音可能与 Google 的声音不同。
+    </div>
+
+    <footer class="footer">
+      Polski Daily · 每天练习，真实使用
+    </footer>
+  </main>
+
+  <script>
+    const sentences = [
+      // 日常交流
+      {c:"日常交流",p:"Dzień dobry.",z:"你好。（白天的正式问候）"},
+      {c:"日常交流",p:"Cześć!",z:"你好！／再见！"},
+      {c:"日常交流",p:"Dobry wieczór.",z:"晚上好。"},
+      {c:"日常交流",p:"Do widzenia.",z:"再见。（正式）"},
+      {c:"日常交流",p:"Do zobaczenia.",z:"回头见。"},
+      {c:"日常交流",p:"Co słychać?",z:"最近怎么样？"},
+      {c:"日常交流",p:"Wszystko dobrze.",z:"一切都好。"},
+      {c:"日常交流",p:"W porządku.",z:"没问题。／还好。"},
+      {c:"日常交流",p:"Dziękuję bardzo.",z:"非常感谢。"},
+      {c:"日常交流",p:"Proszę bardzo.",z:"不客气。／给您。"},
+      {c:"日常交流",p:"Przepraszam.",z:"对不起。／打扰一下。"},
+      {c:"日常交流",p:"Nie ma za co.",z:"不客气。"},
+      {c:"日常交流",p:"Nie rozumiem.",z:"我不明白。"},
+      {c:"日常交流",p:"Rozumiem.",z:"我明白了。"},
+      {c:"日常交流",p:"Nie wiem.",z:"我不知道。"},
+      {c:"日常交流",p:"Oczywiście.",z:"当然。"},
+      {c:"日常交流",p:"Jasne.",z:"当然。／明白。"},
+      {c:"日常交流",p:"To zależy.",z:"这要看情况。"},
+      {c:"日常交流",p:"Nie ma problemu.",z:"没问题。"},
+      {c:"日常交流",p:"Miło mi.",z:"很高兴认识你。"},
+      {c:"日常交流",p:"Miłego dnia!",z:"祝你今天愉快！"},
+      {c:"日常交流",p:"Do jutra!",z:"明天见！"},
+
+      // 听不懂时
+      {c:"听不懂时",p:"Mówię tylko trochę po polsku.",z:"我只会说一点波兰语。"},
+      {c:"听不懂时",p:"Nie mówię dobrze po polsku.",z:"我的波兰语说得不好。"},
+      {c:"听不懂时",p:"Czy możesz mówić wolniej?",z:"你能说慢一点吗？（非正式）"},
+      {c:"听不懂时",p:"Czy może pan mówić wolniej?",z:"您能说慢一点吗？（对男性正式称呼）"},
+      {c:"听不懂时",p:"Czy może pani mówić wolniej?",z:"您能说慢一点吗？（对女性正式称呼）"},
+      {c:"听不懂时",p:"Co to znaczy?",z:"这是什么意思？"},
+      {c:"听不懂时",p:"Jak to się mówi po polsku?",z:"这个用波兰语怎么说？"},
+      {c:"听不懂时",p:"Czy możesz powtórzyć?",z:"你能重复一遍吗？"},
+      {c:"听不懂时",p:"Proszę to napisać.",z:"请把这个写下来。"},
+      {c:"听不懂时",p:"Czy mówisz po angielsku?",z:"你会说英语吗？"},
+      {c:"听不懂时",p:"Czy możesz mi pomóc?",z:"你能帮我吗？"},
+      {c:"听不懂时",p:"Chwileczkę, proszę.",z:"请稍等一下。"},
+      {c:"听不懂时",p:"Jak to wymówić?",z:"这个怎么发音？"},
+
+      // 购物
+      {c:"购物",p:"Ile to kosztuje?",z:"这个多少钱？"},
+      {c:"购物",p:"Poproszę to.",z:"我要这个。"},
+      {c:"购物",p:"Poproszę jedną sztukę.",z:"请给我一个。"},
+      {c:"购物",p:"Czy mogę zapłacić kartą?",z:"我可以刷卡吗？"},
+      {c:"购物",p:"Czy mogę zapłacić gotówką?",z:"我可以付现金吗？"},
+      {c:"购物",p:"Czy jest coś tańszego?",z:"有更便宜的吗？"},
+      {c:"购物",p:"Tylko oglądam, dziękuję.",z:"我只是看看，谢谢。"},
+      {c:"购物",p:"Czy mogę dostać paragon?",z:"可以给我收据吗？"},
+      {c:"购物",p:"Nie potrzebuję reklamówki.",z:"我不需要塑料袋。"},
+      {c:"购物",p:"Czy macie inny rozmiar?",z:"你们有其他尺码吗？"},
+      {c:"购物",p:"To wszystko, dziękuję.",z:"就这些，谢谢。"},
+      {c:"购物",p:"Czy mogę to przymierzyć?",z:"我可以试穿一下吗？"},
+      {c:"购物",p:"Gdzie jest kasa?",z:"收银台在哪里？"},
+
+      // 餐厅
+      {c:"餐厅",p:"Poproszę menu.",z:"请给我菜单。"},
+      {c:"餐厅",p:"Poproszę wodę.",z:"请给我水。"},
+      {c:"餐厅",p:"Co polecasz?",z:"你推荐什么？（非正式）"},
+      {c:"餐厅",p:"Co pan poleca?",z:"您推荐什么？（对男性正式称呼）"},
+      {c:"餐厅",p:"Poproszę to danie.",z:"我要这道菜。"},
+      {c:"餐厅",p:"Bez cukru, proszę.",z:"请不要加糖。"},
+      {c:"餐厅",p:"Bez mięsa, proszę.",z:"请不要放肉。"},
+      {c:"餐厅",p:"Czy mogę prosić o rachunek?",z:"可以结账吗？"},
+      {c:"餐厅",p:"Na wynos, proszę.",z:"请打包带走。"},
+      {c:"餐厅",p:"Na miejscu, proszę.",z:"在这里吃。"},
+      {c:"餐厅",p:"To jest bardzo dobre.",z:"这个非常好吃。"},
+      {c:"餐厅",p:"Jestem uczulony na orzechy.",z:"我对坚果过敏。（男性说法）"},
+      {c:"餐厅",p:"Czy to jest ostre?",z:"这个辣吗？"},
+
+      // 交通
+      {c:"交通",p:"Gdzie jest przystanek autobusowy?",z:"公交车站在哪里？"},
+      {c:"交通",p:"Gdzie jest dworzec kolejowy?",z:"火车站在哪里？"},
+      {c:"交通",p:"Poproszę bilet do Warszawy.",z:"请给我一张去华沙的票。"},
+      {c:"交通",p:"O której odjeżdża pociąg?",z:"火车几点出发？"},
+      {c:"交通",p:"Czy ten autobus jedzie do centrum?",z:"这辆公交车去市中心吗？"},
+      {c:"交通",p:"Gdzie mam wysiąść?",z:"我应该在哪里下车？"},
+      {c:"交通",p:"Proszę tutaj zatrzymać.",z:"请在这里停车。"},
+      {c:"交通",p:"Ile trwa podróż?",z:"这趟旅程需要多长时间？"},
+      {c:"交通",p:"Czy to daleko stąd?",z:"离这里远吗？"},
+      {c:"交通",p:"Szukam tego adresu.",z:"我在找这个地址。"},
+      {c:"交通",p:"Zgubiłem się.",z:"我迷路了。（男性说法）"},
+      {c:"交通",p:"Gdzie jest najbliższy bankomat?",z:"最近的 ATM 机在哪里？"},
+
+      // 居家生活
+      {c:"居家生活",p:"Jestem już w domu.",z:"我已经到家了。"},
+      {c:"居家生活",p:"Zaraz wracam.",z:"我马上回来。"},
+      {c:"居家生活",p:"Gdzie to położyć?",z:"这个放在哪里？"},
+      {c:"居家生活",p:"Gdzie są klucze?",z:"钥匙在哪里？"},
+      {c:"居家生活",p:"Czy możesz otworzyć okno?",z:"你能打开窗户吗？"},
+      {c:"居家生活",p:"Czy możesz zamknąć drzwi?",z:"你能关上门吗？"},
+      {c:"居家生活",p:"Nie działa.",z:"它坏了／不能用了。"},
+      {c:"居家生活",p:"Trzeba to naprawić.",z:"这个需要修理。"},
+      {c:"居家生活",p:"Jest mi zimno.",z:"我觉得冷。"},
+      {c:"居家生活",p:"Jest mi gorąco.",z:"我觉得热。"},
+      {c:"居家生活",p:"Jestem zmęczony.",z:"我累了。（男性说法）"},
+      {c:"居家生活",p:"Jestem głodny.",z:"我饿了。（男性说法）"},
+      {c:"居家生活",p:"Chce mi się pić.",z:"我渴了。"},
+      {c:"居家生活",p:"Muszę iść do łazienki.",z:"我得去洗手间。"},
+      {c:"居家生活",p:"Zaraz wrócę do pokoju.",z:"我马上回房间。"},
+      {c:"居家生活",p:"Gdzie jest łazienka?",z:"洗手间在哪里？"},
+
+      // 工作
+      {c:"工作",p:"Szukam pracy.",z:"我在找工作。"},
+      {c:"工作",p:"Czy oferta pracy jest aktualna?",z:"这个招聘信息还有效吗？"},
+      {c:"工作",p:"Mam doświadczenie w pracy fizycznej.",z:"我有体力劳动的经验。"},
+      {c:"工作",p:"Mogę pracować na zmiany.",z:"我可以上轮班。"},
+      {c:"工作",p:"Kiedy mogę zacząć?",z:"我什么时候可以开始工作？"},
+      {c:"工作",p:"Ile wynosi wynagrodzenie?",z:"工资是多少？"},
+      {c:"工作",p:"Czy umowa jest na piśmie?",z:"合同是书面的吗？"},
+      {c:"工作",p:"Potrzebuję umowy o pracę.",z:"我需要正式劳动合同。"},
+      {c:"工作",p:"Nie rozumiem instrukcji.",z:"我不明白操作说明。"},
+      {c:"工作",p:"Proszę mi pokazać.",z:"请示范给我看。"},
+      {c:"工作",p:"Czy mogę zrobić przerwę?",z:"我可以休息一下吗？"},
+      {c:"工作",p:"Skończyłem pracę.",z:"我下班了。（男性说法）"},
+
+      // 健身
+      {c:"健身",p:"Gdzie jest siłownia?",z:"健身房在哪里？"},
+      {c:"健身",p:"Czy mogę tutaj ćwiczyć?",z:"我可以在这里训练吗？"},
+      {c:"健身",p:"Ile serii robisz?",z:"你做几组？"},
+      {c:"健身",p:"Ile powtórzeń?",z:"做多少次？"},
+      {c:"健身",p:"Możemy ćwiczyć na zmianę?",z:"我们可以轮流使用吗？"},
+      {c:"健身",p:"Skończyłeś już?",z:"你已经练完了吗？（对男性）"},
+      {c:"健身",p:"Ile jeszcze zostało?",z:"还剩多少？"},
+      {c:"健身",p:"Potrzebuję asekuracji.",z:"我需要保护／辅助。"},
+      {c:"健身",p:"Gdzie są hantle?",z:"哑铃在哪里？"},
+      {c:"健身",p:"Dzisiaj trenuję plecy.",z:"我今天练背。"},
+      {c:"健身",p:"Dzisiaj trenuję klatkę piersiową.",z:"我今天练胸。"},
+      {c:"健身",p:"Boli mnie plecy.",z:"我背疼。"},
+      {c:"健身",p:"Muszę odpocząć.",z:"我需要休息。"},
+
+      // 医疗
+      {c:"医疗",p:"Potrzebuję lekarza.",z:"我需要医生。"},
+      {c:"医疗",p:"Źle się czuję.",z:"我感觉不舒服。"},
+      {c:"医疗",p:"Boli mnie głowa.",z:"我头疼。"},
+      {c:"医疗",p:"Boli mnie brzuch.",z:"我肚子疼。"},
+      {c:"医疗",p:"Od kiedy to boli?",z:"从什么时候开始疼的？"},
+      {c:"医疗",p:"Potrzebuję recepty.",z:"我需要处方。"},
+      {c:"医疗",p:"Gdzie jest najbliższa apteka?",z:"最近的药店在哪里？"},
+      {c:"医疗",p:"Czy potrzebuję wizyty?",z:"我需要预约就诊吗？"},
+      {c:"医疗",p:"Jestem uczulony na ten lek.",z:"我对这种药过敏。（男性说法）"},
+      {c:"医疗",p:"Proszę zadzwonić po karetkę.",z:"请叫救护车。"},
+      {c:"医疗",p:"To pilne.",z:"这很紧急。"},
+      {c:"医疗",p:"Nie mam ubezpieczenia.",z:"我没有保险。"},
+
+      // 社交
+      {c:"社交",p:"Jak masz na imię?",z:"你叫什么名字？（非正式）"},
+      {c:"社交",p:"Mam na imię ...",z:"我叫……"},
+      {c:"社交",p:"Skąd jesteś?",z:"你来自哪里？"},
+      {c:"社交",p:"Jestem z Chin.",z:"我来自中国。"},
+      {c:"社交",p:"Mieszkam w Polsce.",z:"我住在波兰。"},
+      {c:"社交",p:"Ile masz lat?",z:"你多大了？"},
+      {c:"社交",p:"Mam dwadzieścia pięć lat.",z:"我二十五岁。"},
+      {c:"社交",p:"Czym się zajmujesz?",z:"你是做什么工作的？"},
+      {c:"社交",p:"Co lubisz robić?",z:"你喜欢做什么？"},
+      {c:"社交",p:"Masz czas dzisiaj?",z:"你今天有时间吗？"},
+      {c:"社交",p:"Może pójdziemy na spacer?",z:"我们要不要去散步？"},
+      {c:"社交",p:"Bardzo mi miło.",z:"很高兴认识你。"},
+      {c:"社交",p:"To dobry pomysł.",z:"这是个好主意。"},
+      {c:"社交",p:"Zgadzam się.",z:"我同意。"},
+      {c:"社交",p:"Nie zgadzam się.",z:"我不同意。"},
+      {c:"社交",p:"Masz rację.",z:"你说得对。"},
+      {c:"社交",p:"Nie jestem pewien.",z:"我不确定。（男性说法）"},
+      {c:"社交",p:"Zobaczymy.",z:"到时候再看。"},
+      {c:"社交",p:"To zależy od sytuacji.",z:"这取决于具体情况。"},
+      {c:"社交",p:"Daj mi znać.",z:"告诉我一声。"},
+      {c:"社交",p:"Napisz do mnie.",z:"给我发消息。"},
+      {c:"社交",p:"Oddzwonię później.",z:"我晚点回电话。"},
+      {c:"社交",p:"Nie martw się.",z:"别担心。"},
+      {c:"社交",p:"Wszystko będzie dobrze.",z:"一切都会好起来的。"},
+
+      // 时间与安排
+      {c:"时间与安排",p:"Która jest godzina?",z:"现在几点？"},
+      {c:"时间与安排",p:"Jest za wcześnie.",z:"太早了。"},
+      {c:"时间与安排",p:"Jest za późno.",z:"太晚了。"},
+      {c:"时间与安排",p:"Nie mam teraz czasu.",z:"我现在没时间。"},
+      {c:"时间与安排",p:"Mam czas po południu.",z:"我下午有时间。"},
+      {c:"时间与安排",p:"O której się spotkamy?",z:"我们几点见面？"},
+      {c:"时间与安排",p:"Będę za dziesięć minut.",z:"我十分钟后到。"},
+      {c:"时间与安排",p:"Spóźnię się trochę.",z:"我会迟到一会儿。"},
+      {c:"时间与安排",p:"Dzisiaj nie mogę.",z:"我今天不行。"},
+      {c:"时间与安排",p:"Może jutro?",z:"明天怎么样？"},
+      {c:"时间与安排",p:"Pasuje mi.",z:"这个时间对我合适。"},
+      {c:"时间与安排",p:"Nie pasuje mi ten termin.",z:"这个时间我不方便。"},
+
+      // 办事与文件
+      {c:"办事与文件",p:"Mam umówioną wizytę.",z:"我已经预约了。"},
+      {c:"办事与文件",p:"Przyszedłem w sprawie karty pobytu.",z:"我是来办理居留卡的。（男性说法）"},
+      {c:"办事与文件",p:"Jakie dokumenty są potrzebne?",z:"需要哪些文件？"},
+      {c:"办事与文件",p:"Mam wszystkie dokumenty.",z:"我所有的文件都带齐了。"},
+      {c:"办事与文件",p:"Brakuje mi jednego dokumentu.",z:"我还缺一份文件。"},
+      {c:"办事与文件",p:"Gdzie mam podpisać?",z:"我应该在哪里签字？"},
+      {c:"办事与文件",p:"Czy potrzebuję tłumaczenia przysięgłego?",z:"我需要宣誓翻译件吗？"},
+      {c:"办事与文件",p:"Kiedy dostanę odpowiedź?",z:"我什么时候能收到答复？"},
+      {c:"办事与文件",p:"Czy mogę dostać potwierdzenie?",z:"我可以拿到确认凭证吗？"},
+      {c:"办事与文件",p:"Proszę mówić trochę wolniej.",z:"请您说得稍微慢一点。"},
+      {c:"办事与文件",p:"Nie znam dobrze języka polskiego.",z:"我还不太懂波兰语。"},
+      {c:"办事与文件",p:"Czy mogę zadać pytanie?",z:"我可以问一个问题吗？"},
+
+      // 紧急情况
+      {c:"紧急情况",p:"Proszę mi pomóc!",z:"请帮帮我！"},
+      {c:"紧急情况",p:"Proszę zadzwonić na policję.",z:"请报警。"},
+      {c:"紧急情况",p:"Zgubiłem portfel.",z:"我的钱包丢了。（男性说法）"},
+      {c:"紧急情况",p:"Zgubiłem telefon.",z:"我的手机丢了。（男性说法）"},
+      {c:"紧急情况",p:"Nie mogę znaleźć adresu.",z:"我找不到这个地址。"},
+      {c:"紧急情况",p:"Potrzebuję pomocy.",z:"我需要帮助。"},
+      {c:"紧急情况",p:"Proszę zadzwonić pod numer 112.",z:"请拨打 112。"},
+      {c:"紧急情况",p:"Czy wszystko w porządku?",z:"一切都还好吗？"}
+    ];
+
+    const STORAGE_KEY = "polskiDailyProgress_v2";
+
+    let learned = new Set();
+    let later = new Set();
+    let activeCategory = "全部场景";
+    let activeStatus = "all";
+    let currentAudio = null;
+    let isSpeaking = false;
+
+    const categories = [
+      "全部场景",
+      ...new Set(sentences.map(s => s.c))
+    ];
+
+    function loadProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        learned = new Set(saved.learned || []);
+        later = new Set(saved.later || []);
+      } catch (e) {
+        learned = new Set();
+        later = new Set();
+      }
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          learned: [...learned],
+          later: [...later]
+        }));
+      } catch (e) {
+        console.warn("无法保存学习进度：", e);
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById("total-stat").textContent = sentences.length;
+      document.getElementById("learned-stat").textContent = learned.size;
+      document.getElementById("later-stat").textContent = later.size;
+      document.getElementById("progress-pill").textContent =
+        `已掌握 ${learned.size} 句`;
+    }
+
+    function renderCategoryFilters() {
+      const container = document.getElementById("category-filters");
+      container.innerHTML = "";
+
+      categories.forEach(category => {
+        const button = document.createElement("button");
+        button.className = "filter-btn" +
+          (activeCategory === category ? " active" : "");
+        button.textContent = category;
+        button.addEventListener("click", () => {
+          activeCategory = category;
+          renderCategoryFilters();
+          renderSentences();
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function renderStatusFilters() {
+      document.querySelectorAll("#status-filters button").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.status === activeStatus
+        );
+      });
+    }
+
+    function renderSentences() {
+      const query = document.getElementById("search").value
+        .trim().toLowerCase();
+
+      const filtered = sentences
+        .map((sentence, index) => ({ ...sentence, id: index }))
+        .filter(s => {
+          const matchesCategory =
+            activeCategory === "全部场景" || s.c === activeCategory;
+
+          const matchesQuery =
+            !query ||
+            s.p.toLowerCase().includes(query) ||
+            s.z.toLowerCase().includes(query) ||
+            s.c.toLowerCase().includes(query);
+
+          const isLearned = learned.has(s.id);
+          const isLater = later.has(s.id);
+
+          const matchesStatus =
+            activeStatus === "all" ||
+            (activeStatus === "learned" && isLearned) ||
+            (activeStatus === "unlearned" && !isLearned) ||
+            (activeStatus === "later" && isLater);
+
+          return matchesCategory && matchesQuery && matchesStatus;
+        });
+
+      const list = document.getElementById("sentence-list");
+      document.getElementById("result-count").textContent =
+        `${filtered.length} 句`;
+
+      const title = activeCategory === "全部场景"
+        ? "日常实用句子"
+        : activeCategory;
+
+      document.getElementById("list-title").textContent = title;
+      list.innerHTML = "";
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">🔎</div>
+            <strong>没有找到符合条件的句子</strong>
+            <div style="margin-top:6px;font-size:13px">
+              换个关键词，或者切换筛选条件试试。
+            </div>
+          </div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      filtered.forEach(s => {
+        const isLearned = learned.has(s.id);
+        const isLater = later.has(s.id);
+
+        const card = document.createElement("article");
+        card.className = "sentence-card" + (isLearned ? " learned" : "");
+
+        const top = document.createElement("div");
+        top.className = "card-top";
+
+        const main = document.createElement("div");
+        main.className = "sentence-main";
+
+        const category = document.createElement("div");
+        category.className = "category";
+        category.textContent = s.c;
+
+        const polish = document.createElement("div");
+        polish.className = "polish";
+        polish.textContent = s.p;
+
+        const chinese = document.createElement("div");
+        chinese.className = "chinese";
+        chinese.textContent = s.z;
+
+        main.append(category, polish, chinese);
+
+        const play = document.createElement("button");
+        play.className = "play-btn";
+        play.type = "button";
+        play.title = "播放波兰语发音";
+        play.setAttribute("aria-label", "播放：" + s.p);
+        play.innerHTML = "▶";
+        play.addEventListener("click", () => playPolish(s.p, play));
+
+        top.append(main, play);
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+
+        const learnedButton = document.createElement("button");
+        learnedButton.className = "action-btn" +
+          (isLearned ? " is-learned" : "");
+        learnedButton.textContent = isLearned ? "✓ 已经学会" : "✓ 标记为学会";
+        learnedButton.addEventListener("click", () => {
+          if (learned.has(s.id)) {
+            learned.delete(s.id);
+          } else {
+            learned.add(s.id);
+            later.delete(s.id);
+          }
+          saveProgress();
+          renderSentences();
+        });
+
+        const laterButton = document.createElement("button");
+        laterButton.className = "action-btn" +
+          (isLater ? " is-later" : "");
+        laterButton.textContent = isLater ? "★ 稍后再学" : "☆ 稍后学习";
+        laterButton.addEventListener("click", () => {
+          if (later.has(s.id)) {
+            later.delete(s.id);
+          } else {
+            later.add(s.id);
+          }
+          saveProgress();
+          renderSentences();
+        });
+
+        const copyButton = document.createElement("button");
+        copyButton.className = "action-btn";
+        copyButton.textContent = "复制波兰语";
+        copyButton.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(s.p);
+            copyButton.textContent = "已复制 ✓";
+            setTimeout(() => copyButton.textContent = "复制波兰语", 1200);
+          } catch (e) {
+            const area = document.createElement("textarea");
+            area.value = s.p;
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand("copy");
+            area.remove();
+            copyButton.textContent = "已复制 ✓";
+            setTimeout(() => copyButton.textContent = "复制波兰语", 1200);
+          }
+        });
+
+        actions.append(learnedButton, laterButton, copyButton);
+        card.append(top, actions);
+        fragment.appendChild(card);
+      });
+
+      list.appendChild(fragment);
+    }
+
+    // 优先尝试 Google Translate 的网页语音接口。
+    // 该接口并非稳定的官方公开 API，因此保留浏览器语音备用方案。
+    function googleTtsUrl(text) {
+      return "https://translate.google.com/translate_tts" +
+        "?ie=UTF-8&client=gtx&tl=pl&q=" + encodeURIComponent(text);
+    }
+
+    function browserSpeech(text) {
+      return new Promise((resolve, reject) => {
+        if (!("speechSynthesis" in window) ||
+            !("SpeechSynthesisUtterance" in window)) {
+          reject(new Error("当前浏览器不支持语音合成"));
+          return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "pl-PL";
+        utterance.rate = 0.85;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        const voices = window.speechSynthesis.getVoices();
+        const polishVoice = voices.find(v =>
+          v.lang && v.lang.toLowerCase().startsWith("pl")
+        );
+
+        if (polishVoice) utterance.voice = polishVoice;
+
+        utterance.onend = () => resolve();
+        utterance.onerror = event => reject(
+          new Error(event.error || "浏览器语音播放失败")
+        );
+
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+    async function playPolish(text, button) {
+      if (isSpeaking) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudio = null;
+        }
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+        isSpeaking = false;
+        document.querySelectorAll(".play-btn").forEach(b => {
+          b.disabled = false;
+          b.innerHTML = "▶";
+        });
+        return;
+      }
+
+      isSpeaking = true;
+      button.disabled = true;
+      button.innerHTML = "…";
+
+      const resetButtons = () => {
+        isSpeaking = false;
+        currentAudio = null;
+        document.querySelectorAll(".play-btn").forEach(b => {
+          b.disabled = false;
+          b.innerHTML = "▶";
+        });
+      };
+
+      try {
+        const audio = new Audio();
+        currentAudio = audio;
+        audio.preload = "auto";
+        audio.referrerPolicy = "no-referrer";
+        audio.src = googleTtsUrl(text);
+
+        await new Promise((resolve, reject) => {
+          let settled = false;
+          const finish = (error) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timeout);
+            audio.onended = null;
+            audio.onerror = null;
+            if (error) reject(error);
+            else resolve();
+          };
+
+          const timeout = setTimeout(
+            () => finish(new Error("Google 语音连接超时")),
+            9000
+          );
+
+          audio.onended = () => finish();
+          audio.onerror = () => finish(new Error("Google 语音无法播放"));
+
+          const playPromise = audio.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(error => finish(error));
+          }
+        });
+
+        resetButtons();
+      } catch (googleError) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+
+        try {
+          await browserSpeech(text);
+          resetButtons();
+        } catch (fallbackError) {
+          resetButtons();
+          alert(
+            "语音播放失败。\n\n" +
+            "请检查网络连接，并确认手机浏览器支持波兰语语音。\n" +
+            "如果仍然无法播放，可以尝试用 Chrome 打开网站。"
+          );
+          console.error("Google TTS:", googleError);
+          console.error("浏览器语音:", fallbackError);
+        }
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", renderSentences);
+
+    document.querySelectorAll("#status-filters button").forEach(button => {
+      button.addEventListener("click", () => {
+        activeStatus = button.dataset.status;
+        renderStatusFilters();
+        renderSentences();
+      });
+    });
+
+    loadProgress();
+    renderCategoryFilters();
+    renderStatusFilters();
+    updateStats();
+    renderSentences();
+  </script>
+</body>
+</html>
+
